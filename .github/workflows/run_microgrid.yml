@@ -1,0 +1,38 @@
+name: Run Microgrid Simulation
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 'Number of days to simulate'
+        required: true
+        default: '365'
+      random_state:
+        description: 'Random state for reproducibility'
+        required: true
+        default: '42'
+
+jobs:
+  run-simulation:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy pandas matplotlib scikit-learn seaborn catboost xgboost lightgbm
+
+    - name: Run microgrid simulation
+      run: |
+        python microgridpy.py
+      env:
+        DAYS: ${{ github.event.inputs.days }}
+        RANDOM_STATE: ${{ github.event.inputs.random_state }}
